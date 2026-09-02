@@ -21,9 +21,12 @@ def get_token():
     )
 
 
-def open_session():
+def open_session(read_write=False):
     """
     Abre una sesión autenticada contra el token.
+
+    read_write=False -> sesión de solo lectura.
+    read_write=True  -> permite crear/modificar objetos del token.
     """
     if not HSM_USER_PIN:
         raise RuntimeError(
@@ -33,5 +36,6 @@ def open_session():
     token = get_token()
 
     return token.open(
+        rw=read_write,
         user_pin=HSM_USER_PIN
     )
