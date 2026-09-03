@@ -1,16 +1,30 @@
-import pkcs11
-
 from hsm.connection import open_session
-from hsm.aes import generate_aes_key
+from hsm.aes import encrypt_aes, decrypt_aes
 
-# Solo se ejecuta una vez, ya que genera la clave AES.
-# El atributo store=true, guarda esa clave en el token ---  
 
 def main():
-    with open_session(read_write=True) as session:
-        key = generate_aes_key(session)
-        print("Clave AES generada correctamente")
-        print("Label:", key[pkcs11.Attribute.LABEL])
+
+    plaintext = b"Hola mundo para el HSM"
+
+    with open_session() as session:
+
+        iv, ciphertext = encrypt_aes(
+            session,
+            plaintext
+        )
+
+        decrypted = decrypt_aes(
+            session,
+            iv,
+            ciphertext
+        )
+
+        print("=== AES ENCRYPT / DECRYPT ===")
+        print()
+        print("Plaintext :", plaintext.decode())
+        print("IV        :", iv.hex())
+        print("Ciphertext:", ciphertext.hex())
+        print("Decrypted :", decrypted.decode())
 
 
 if __name__ == "__main__":
